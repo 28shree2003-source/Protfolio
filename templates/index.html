@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Intent Recognition Chatbot</title>
+
+    <link rel="stylesheet"
+          href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+
+<div class="chat-container">
+
+    <div class="chat-header">
+    <h1>🎓 Student Query Chatbot</h1>
+    <p>AI Powered Assistant for Student Queries (Rule-Based + ML Models)</p>
+</div>
+
+    <div id="chat-box" class="chat-box">
+
+    <div class="bot-message">
+        👋 Hello! I am your Student Query Chatbot.<br><br>
+
+        💡 Click any question below to ask:<br><br>
+
+        <div class="quick-questions">
+
+            <span onclick="sendExample(this)">how can i get admission</span><br>
+            <span onclick="sendExample(this)">what is the course fee</span><br>
+            <span onclick="sendExample(this)">what courses are available</span><br>
+            <span onclick="sendExample(this)">when are exams starting</span><br>
+            <span onclick="sendExample(this)">how much attendance is required</span><br>
+
+        </div>
+
+        <br>Or type your own question below.
+    </div>
+
+</div>
+
+    <div class="input-area">
+
+        <input
+            type="text"
+            id="user-input"
+            placeholder="Type your message..."
+            onkeypress="handleKey(event)"
+        >
+
+        <button onclick="sendMessage()">
+            Send
+        </button>
+
+    </div>
+
+</div>
+
+<script>
+
+function handleKey(event){
+    if(event.key === "Enter"){
+        sendMessage();
+    }
+}
+function sendExample(el){
+
+    let message = el.innerText;
+
+    let input = document.getElementById("user-input");
+    input.value = message;
+
+    sendMessage(); // automatically send
+}
+
+async function sendMessage(){
+
+    let input =
+    document.getElementById("user-input");
+
+    let message =
+    input.value.trim();
+
+    if(message === ""){
+        return;
+    }
+
+    let chatBox =
+    document.getElementById("chat-box");
+
+    chatBox.innerHTML +=
+    `<div class="user-message">
+        ${message}
+    </div>`;
+
+    input.value = "";
+
+    let response =
+    await fetch("/chat",{
+        method:"POST",
+        headers:{
+            "Content-Type":"application/json"
+        },
+        body:JSON.stringify({
+            message:message
+        })
+    });
+
+    let data =
+    await response.json();
+
+    chatBox.innerHTML +=
+    `<div class="bot-message">
+        ${data.response}
+    </div>`;
+
+    chatBox.scrollTop =
+    chatBox.scrollHeight;
+}
+
+</script>
+
+</body>
+</html>
